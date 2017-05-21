@@ -15,7 +15,6 @@ def print_error(context, err_string):
     print("Stack:")
     traceback.print_stack()
     print("----------------------------------------")
-    sys.exit(1)
 
 def error(context, err_string):
     print_error(context, err_string)
@@ -62,7 +61,7 @@ def verify_timeseries(hfile, name, location, ts_type):
 
         Arguments:
             hfile (text) name of nwb file (include path)
-            
+
             name (text) name of time series
 
             location (text) path in HDF5 file
@@ -72,7 +71,7 @@ def verify_timeseries(hfile, name, location, ts_type):
 
         Returns:
             *nothing*
-    """ 
+    """
     try:
         f = h5py.File(hfile, 'r')
     except IOError as e:
@@ -116,13 +115,13 @@ def verify_timeseries(hfile, name, location, ts_type):
     except Exception as e:
         if "starting_time" not in ts:
             if not search_for_substring(missing, "timestamps"):
-                error("Reading timestamps", e)
+                error("Reading timestamps", str(e))
     f.close()
-            
+
 
 def verify_present(hfile, group, field):
     """ verify that a field is present and returns its contents
-    """ 
+    """
     try:
         f = h5py.File(hfile, 'r')
     except IOError as e:
@@ -143,7 +142,7 @@ def verify_present(hfile, group, field):
 
 def verify_attribute_present(hfile, obj, field):
     """ verify that an attribute is present and returns its contents
-    """ 
+    """
     try:
         f = h5py.File(hfile, 'r')
     except IOError as e:
@@ -160,7 +159,7 @@ def verify_attribute_present(hfile, obj, field):
 
 def verify_absent(hfile, group, field):
     """ verify that a field is not present
-    """ 
+    """
     try:
         f = h5py.File(hfile, 'r')
     except IOError as e:
@@ -185,4 +184,3 @@ def strcmp(s1, s2):
     if s1 == s2 or s1 == np.bytes_(s2):
         return True
     return False
-
