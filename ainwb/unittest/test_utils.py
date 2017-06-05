@@ -1,9 +1,12 @@
-import h5py
-import numpy as np
+
 import sys
 import traceback
 import inspect
+import h5py
+import numpy as np
 import nwb
+from nwb.nwbco import *
+
 
 def print_error(context, err_string):
     func = traceback.extract_stack()[-3][2]
@@ -16,11 +19,14 @@ def print_error(context, err_string):
     traceback.print_stack()
     print("----------------------------------------")
 
+
 def error(context, err_string):
     print_error(context, err_string)
 
+
 def exc_error(context, exc):
     print_error(context, str(exc))
+
 
 def search_for_string(h5_str, value):
     match = False
@@ -35,6 +41,7 @@ def search_for_string(h5_str, value):
                     match = True
                     break
     return match
+
 
 def search_for_substring(h5_str, value):
     match = False
@@ -52,25 +59,27 @@ def search_for_substring(h5_str, value):
 #        return search_for_substring(h5_str, np.bytes_(value))
     return match
 
+
 def verify_timeseries(hfile, name, location, ts_type):
-    """ verify that a time series is valid
+    """
+    Verify that a time series is valid
 
-        makes sure that the entity with this name at the specified path
-        has the minimum required fields for being a time series,
-        that it is labeled as one, and that its ancestry is correct
+    makes sure that the entity with this name at the specified path
+    has the minimum required fields for being a time series,
+    that it is labeled as one, and that its ancestry is correct
 
-        Arguments:
-            hfile (text) name of nwb file (include path)
+    Arguments:
+        hfile (text) name of nwb file (include path)
 
-            name (text) name of time series
+        name (text) name of time series
 
-            location (text) path in HDF5 file
+        location (text) path in HDF5 file
 
-            ts_type (text) class name of time series to check for
-            (eg, AnnotationSeries)
+        ts_type (text) class name of time series to check for
+        (eg, AnnotationSeries)
 
-        Returns:
-            *nothing*
+    Returns:
+        *nothing*
     """
     try:
         f = h5py.File(hfile, 'r')
@@ -120,7 +129,8 @@ def verify_timeseries(hfile, name, location, ts_type):
 
 
 def verify_present(hfile, group, field):
-    """ verify that a field is present and returns its contents
+    """
+    Verify that a field is present and returns its contents
     """
     try:
         f = h5py.File(hfile, 'r')
@@ -140,8 +150,10 @@ def verify_present(hfile, group, field):
     f.close()
     return val
 
+
 def verify_attribute_present(hfile, obj, field):
-    """ verify that an attribute is present and returns its contents
+    """
+    Verify that an attribute is present and returns its contents
     """
     try:
         f = h5py.File(hfile, 'r')
@@ -157,8 +169,10 @@ def verify_attribute_present(hfile, obj, field):
     f.close()
     return val
 
+
 def verify_absent(hfile, group, field):
-    """ verify that a field is not present
+    """
+    Verify that a field is not present
     """
     try:
         f = h5py.File(hfile, 'r')
@@ -179,6 +193,70 @@ def create_new_file(fname, identifier):
     settings["overwrite"] = True
     settings["description"] = "softlink test"
     return nwb.NWB(**settings)
+
+
+def create_annotation_series(fname, name, target, desc="annotation ",
+                             newfile=True):
+    """
+    Helper function to help tests create example annotations
+    """
+    settings = {}
+    settings["filename"] = fname
+    if newfile:
+        settings["identifier"] = nwb.create_identifier(desc+"example")
+        settings["overwrite"] = True
+        settings["start_time"] = "Sat Jul 04 2015 3:14:16"
+        settings["description"] = "Test " + desc + "file"
+    else:
+        settings["modify"] = True
+    neurodata = nwb.NWB(**settings)
+    #
+    annot = neurodata.create_timeseries("AnnotationSeries", name, target)
+    annot.set_description("This is an AnnotationSeries '%s' with sample data" % name)
+    annot.set_comment("The comment and description fields can store arbitrary human-readable data")
+    annot.set_source("Observation of Dr. J Doe")
+    #
+    annot.add_annotation("Rat in bed, beginning sleep 1", 15.0)
+    annot.add_annotation("Rat placed in enclosure, start run 1", 933.0)
+    annot.add_annotation("Rat taken out of enclosure, end run 1", 1456.0)
+    annot.add_annotation("Rat in bed, start sleep 2", 1461.0)
+    annot.add_annotation("Rat placed in enclosure, start run 2", 2401.0)
+    annot.add_annotation("Rat taken out of enclosure, end run 2", 3210.0)
+    annot.add_annotation("Rat in bed, start sleep 3", 3218.0)
+    annot.add_annotation("End sleep 3", 4193.0)
+    #
+    annot.finalize()
+    neurodata.close()
+
+def create_general_extra(fname):
+    """
+    Create the test file for test_general_extra
+    """
+    settings = {}
+    settings["filename"] = fname
+    settings["identifier"] = nwb.create_identifier("general extracellular test")
+    settings["overwrite"] = True
+    settings["description"] = "test elements in /general/extracellular_ephys"
+    neurodata = nwb.NWB(**settings)
+
+    neurodata.set_metadata(EXTRA_ELECTRODE_MAP, [[1, 1, 1], [1, 2, 3]])
+    neurodata.set_metadata(EXTRA_ELECTRODE_GROUP, ["p1", "p2"])
+    neurodata.set_metadata(EXTRA_IMPEDANCE, [1.0e6, 2.0e6])
+    neurodata.set_metadata(EXTRA_FILTERING, "EXTRA_FILTERING")
+    neurodata.set_metadata(EXTRA_CUSTOM("EXTRA_CUSTOM"), "EXTRA_CUSTOM")
+
+    neurodata.set_metadata(EXTRA_SHANK_DESCRIPTION("p1"), "DESCRIPTION")
+    neurodata.set_metadata(EXTRA_SHANK_LOCATION("p1"), "LOCATION")
+    neurodata.set_metadata(EXTRA_SHANK_DEVICE("p1"), "DEVICE")
+    neurodata.set_metadata(EXTRA_SHANK_CUSTOM("p1", "extra_shank_custom"), "EXTRA_SHANK_CUSTOM")
+
+    neurodata.set_metadata(EXTRA_SHANK_DESCRIPTION("p2"), "DESCRIPTION")
+    neurodata.set_metadata(EXTRA_SHANK_LOCATION("p2"), "LOCATION")
+    neurodata.set_metadata(EXTRA_SHANK_DEVICE("p2"), "DEVICE")
+    neurodata.set_metadata(EXTRA_SHANK_CUSTOM("p2", "extra_shank_custom"), "EXTRA_SHANK_CUSTOM")
+
+    neurodata.close()
+
 
 def strcmp(s1, s2):
     if s1 == s2 or s1 == np.bytes_(s2):
