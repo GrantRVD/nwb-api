@@ -1,5 +1,7 @@
 
 import sys
+import os.path
+from tempfile import gettempdir
 import traceback
 import inspect
 import h5py
@@ -26,6 +28,13 @@ def error(context, err_string):
 
 def exc_error(context, exc):
     print_error(context, str(exc))
+
+
+def create_test_filename(fname="test.nwb"):
+    """
+    Creates a filename with the given fname(string) in a temporary directory
+    """
+    return os.path.join(gettempdir(), fname)
 
 
 def search_for_string(h5_str, value):

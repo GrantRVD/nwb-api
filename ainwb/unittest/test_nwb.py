@@ -12,7 +12,7 @@ def test_annotation_series():
     """
     Test creation of AnnotationSeries and ancestry of TimeSeries
     """
-    fname = "x_annotation.nwb"
+    fname = ut.create_test_filename("x_annotation.nwb")
     name = "annot"
     acquisition_loc = "acquisition/timeseries"
     stimulus_loc = "stimulus/presentation"
@@ -33,7 +33,7 @@ def test_append():
     Test appending of TimeSeries to existing file
     Test preservation of (previous) TimeSeries when modified
     """
-    fname = "x_append.nwb"
+    fname = ut.create_test_filename("x_append.nwb")
     name1 = "annot1"
     name2 = "annot2"
     acquisition_loc = "acquisition/timeseries"
@@ -51,7 +51,7 @@ def test_epoch_tag():
     Test creation of two epochs with different tags
     Test creation of main folder with all unique tags & tags assigned to epochs
     """
-    fname = "x_epoch_tag.nwb"
+    fname = ut.create_test_filename("x_epoch_tag.nwb")
     borg = ut.create_new_file(fname, "Epoch tags")
     tags = [b"tag-a", b"tag-b", b"tag-c"]
 
@@ -84,7 +84,7 @@ def test_general_extra():
     Test the implementation of extracellular metadata fields
     """
 
-    fname = "x_general_ephys.nwb"
+    fname = ut.create_test_filename("x_general_ephys.nwb")
     gen_ephys_dir = "general/extracellular_ephys/"
     ut.create_general_extra(fname)
 
@@ -122,7 +122,7 @@ def test_general_optophys():
     """
     Test implementation of intracellular optophysiology metadata fields
     """
-    fname = "x_general_image.nwb"
+    fname = ut.create_test_filename("x_general_image.nwb")
     gen_optophys_dir = "general/optophysiology/"
     ut.create_general_optophys(fname)
 
@@ -157,7 +157,7 @@ def test_general_optogen():
     """
     Test implementation of optogenetics metadata fields
     """
-    fname = "x_general_opto.nwb"
+    fname = ut.create_test_filename("x_general_opto.nwb")
     gen_optogen_dir = "general/optogenetics/"
     ut.create_general_optogen(fname)
 
@@ -173,7 +173,7 @@ def test_general_optogen():
 
 
 def test_general_intra():
-    fname = "x_general_intra.nwb"
+    fname = ut.create_test_filename("x_general_intra.nwb")
     gen_intra_dir = "general/intracellular_ephys/"
     ut.create_general_intra(fname)
 
@@ -205,7 +205,7 @@ def test_general_subject():
     """
     Test implementation of subject record fields
     """
-    fname = "x_general_species.nwb"
+    fname = ut.create_test_filename("x_general_species.nwb")
     gen_subj_dir = "general/subject/"
     ut.create_general_subject(fname)
     val = ut.verify_present(fname, gen_subj_dir, "description")
@@ -224,7 +224,7 @@ def test_general_top():
     """
     Test implementation of top-level metadata
     """
-    fname = "x_general_top.nwb"
+    fname = ut.create_test_filename("x_general_top.nwb")
     ut.create_general_top(fname)
 
     ut.verify_field(fname, "DATA_COLLECTION")
@@ -254,7 +254,7 @@ def test_add_ts():
     Test creation of module and interface
     Test adding timeseries to interface
     """
-    fname = "x_if_add_ts.nwb"
+    fname = ut.create_test_filename("x_if_add_ts.nwb")
     ut.create_iface_series(fname, True)
     name1 = "Ones"
     ut.verify_timeseries(fname, name1, "processing/test module/BehavioralEvents", "TimeSeries")
@@ -264,7 +264,7 @@ def test_isi_iface():
     """
     Test storage of retinotopic imaging data
     """
-    fname = "x_if_isi.nwb"
+    fname = ut.create_test_filename("x_if_isi.nwb")
     name = "test_module"
     iname = "processing/" + name + "/ImagingRetinotopy"
     ut.create_isi_iface(fname, name)
@@ -285,7 +285,7 @@ def test_file_modification():
     """
     Test file modification and logging of multiple modification datetimes
     """
-    fname = "x_modification_time.nwb"
+    fname = ut.create_test_filename("x_modification_time.nwb")
 
     # File creation
     settings = {}
@@ -330,7 +330,7 @@ def test_nodata_series():
     Test implementation of NWB.TimeSeries.ignore_data
     Test acknowledgment of missing 'data' attribute
     """
-    fname = "x_no_data.nwb"
+    fname = ut.create_test_filename("x_no_data.nwb")
     name = "nodata"
     ut.create_nodata_series(fname, name, "acquisition")
     ut.verify_timeseries(fname, name, "acquisition/timeseries", "TimeSeries")
@@ -342,7 +342,7 @@ def test_notime_series():
     Test time series placement in acquisition, template, and stimulus attributes
     Test NWB.TimeSeries.ignore_time
     """
-    fname = "x_no_time.nwb"
+    fname = ut.create_test_filename("x_no_time.nwb")
     name = "notime"
     ut.create_notime_series(fname, name, "acquisition")
     ut.verify_timeseries(fname, name, "acquisition/timeseries", "TimeSeries")
@@ -359,7 +359,7 @@ def test_refimage_series():
     """
     Test implementation of reference image storage
     """
-    fname = "x_ref_image.nwb"
+    fname = ut.create_test_filename("x_ref_image.nwb")
     name = "refimage"
     ut.create_refimage(fname, name)
     val = ut.verify_present(fname, "acquisition/images/", name)
@@ -382,8 +382,8 @@ def test_softlink():
     """
     Test implementation of time series with softlinked data source
     """
-    fname1 = "x_softlink1.nwb"
-    fname2 = "x_softlink2.nwb"
+    fname1 = ut.create_test_filename("x_softlink1.nwb")
+    fname2 = ut.create_test_filename("x_softlink2.nwb")
     name1 = "softlink_source"
     name2 = "softlink_reader"
     ut.create_softlink_source(fname1, name1, "acquisition")
@@ -399,7 +399,7 @@ def test_starting_time():
     """
     Test implementation of NWB.TimeSeries.starting_time attribute
     """
-    fname = "x_starting_time.nwb"
+    fname = ut.create_test_filename("x_starting_time.nwb")
     name = "starting_time"
     ut.create_startingtime_series(fname, name, "acquisition")
     ut.verify_timeseries(fname, name, "acquisition/timeseries", "TimeSeries")
@@ -415,7 +415,7 @@ def test_ts_link():
     """
     Test implementation of time series linking and hardlinking for data and timestamps
     """
-    fname = "x_timeseries_link.nwb"
+    fname = ut.create_test_filename("x_timeseries_link.nwb")
     root = "root"
     ut.create_linked_series(fname, root)
 
@@ -450,7 +450,7 @@ def test_unit_times():
     """
     Test implementation of UnitTimes interface
     """
-    fname = "x_unittimes.nwb"
+    fname = ut.create_test_filename("x_unittimes.nwb")
 
     # Create test file containing a spike data module with UnitTimes interface
     neurodata = ut.create_spike_data(fname)
